@@ -8,27 +8,23 @@ To make the automation work, you must generate three secret keys and add them to
 
 ### Step 1.1: Generate the Secrets
 
-**1. Google Gemini API Key**
-This key is used for the AI analysis of log files.
+**1. Google Cloud credentials for Claude on Vertex AI**
+The AI analysis uses LangChain's `ChatAnthropicVertex` integration. Authenticate
+with Google Application Default Credentials locally (`gcloud auth application-default
+login`) or configure the GitHub workflow with a service account/workload identity that
+can invoke Claude on Vertex AI. Set `ANTHROPIC_VERTEX_PROJECT_ID` and
+`CLOUD_ML_REGION` for the target project and region.
 
-* **How to get it:** Since you already have a Google Cloud Console login, follow these precise steps:
-    1.  Go to the [Google Cloud Console](https://console.cloud.google.com/). 
-        Create a Project (eg. fedora-iot-inspector). At the top of the page, select an existing project or create a new one.
-    2.  **Enable the API:**
-        * Using the top search bar, search for **"Generative Language API"**.
-        * Click on it from the search results and then click the **"Enable"** button. This authorizes your project to use the API.
-    3.  **Create the API Key:**
-        * Using the navigation menu (☰), go to **`APIs & Services > Credentials`**.
-        * Click **`+ CREATE CREDENTIALS`** at the top and select **`API key`**.
-        * A new key will be generated. Copy it and save it somewhere temporarily.
-    4.  **Secure the API Key (Important):**
-        * In the list of keys, find your new key and click on its name to edit it.
-        * Under **Application restrictions**, select `None`. This is necessary for the script to use the key from the GitHub Actions server.
-        * Under **API restrictions**, select `Restrict key`. In the dropdown that appears, find and check the box for **`Generative Language API`**.
-        * Click **`SAVE`**.
+The log-analysis and final-synthesis models are configured separately in
+[`ai_models.json`](ai_models.json). Set `AI_MODEL_CONFIG` to use a different config
+file without editing the repository default.
 
 **2. GitHub Personal Access Token**
-This token is used to search for related issues on GitHub to provide more context to the AI.
+This token lets the inspector automatically compare failure signatures with open
+issues in `fedora-iot/iot-distro` and report potential prior reports in Slack.
+It uses the AI's structured analysis plus raw-log evidence, and compares only the
+meaningful bug-report fields rather than reproduction-template text. The matching
+decision remains locally verified against the logs.
 
 * **How to get it:** Follow the guide to create a "classic" Personal Access Token.
 * **Guide:** [Creating a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic)
@@ -55,7 +51,6 @@ SLACK_WEBHOOK_URL=""
 2. In the left sidebar, navigate to **`Security` > `Secrets and variables` > `Actions`**.
 3. Ensure you are on the **`Secrets`** tab.
 4. Click **`New repository secret`** for each of the keys you generated. **The names must be an exact match**:
-   * `GEMINI_API_KEY`: The key you got from Google Cloud Console.
    * `MY_GITHUB_TOKEN`: The `ghp_...` token you got from GitHub.
    * `SLACK_WEBHOOK_URL`: The webhook URL you got from Slack.
 
@@ -66,10 +61,12 @@ SLACK_WEBHOOK_URL=""
 ### Step 2.1: Create a Virtual Environment
 
 It is a best practice to use a virtual environment to manage project-specific dependencies.
+Python 3.14+ may show an upstream LangChain/Pydantic compatibility warning during AI
+initialization; the inspector leaves this warning visible.
 
 ```bash
 # From your project's root directory
-python -m venv .venv
+python3 -m venv .venv
 ```
 
 ### Step 2.2: Activate the Virtual Environment
@@ -89,7 +86,10 @@ The script needs your secret keys to run locally. In the root directory of your 
 Add your secrets to this file using the format VARIABLE_NAME="value".
 This file is for local development only. Do not commit it.
 
-GEMINI_API_KEY="paste_your_google_api_key_here"
+ANTHROPIC_VERTEX_PROJECT_ID="your-google-cloud-project"
+CLOUD_ML_REGION="global"
+# Optional: path to a different JSON model configuration
+# AI_MODEL_CONFIG="/path/to/ai_models.json"
 MY_GITHUB_TOKEN="ghp_YourGitHubTokenGoesHere"
 SLACK_WEBHOOK_URL="[https://hooks.slack.com/services/your/webhook/url/here](https://hooks.slack.com/services/your/webhook/url/here)"
 

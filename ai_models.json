@@ -1,0 +1,16 @@
+{
+  "log_analysis": {
+    "provider": "anthropic_vertex",
+    "model": "claude-haiku-4-5@20251001",
+    "max_output_tokens": 700,
+    "temperature": 0.0,
+    "max_retries": 2
+  },
+  "synthesis": {
+    "provider": "anthropic_vertex",
+    "model": "claude-sonnet-4-5@20250929",
+    "max_output_tokens": 1600,
+    "temperature": 0.0,
+    "max_retries": 2
+  }
+}

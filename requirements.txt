@@ -1,5 +1,5 @@
 requests
 beautifulsoup4
-anthropic[vertex]
+langchain-google-vertexai[anthropic]>=3.2.4
 python-dotenv
 PyGithub
