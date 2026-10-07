@@ -31,7 +31,6 @@ jobs:
         env:
           ANTHROPIC_VERTEX_PROJECT_ID: ${{ vars.ANTHROPIC_VERTEX_PROJECT_ID || 'itpc-ca-b7a2ceb3c4' }}
           CLOUD_ML_REGION: ${{ vars.CLOUD_ML_REGION || 'us-east5' }}
-          AI_MODEL: ${{ vars.AI_MODEL || 'claude-sonnet-4-5@20250929' }}
           MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           DISABLE_SLACK: 'false'  # TODO: Change to 'false' after testing is complete
