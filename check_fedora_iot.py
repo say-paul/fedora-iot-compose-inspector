@@ -752,8 +752,8 @@ def send_slack_notification(blocks):
     for block in blocks:
         if block.get("type") == "section":
             text = block.get("text", {}).get("text", "")
-            if len(text) > 2900:
-                block["text"]["text"] = text[:2900] + "\n... _(truncated)_"
+            if len(text) > 3500:
+                block["text"]["text"] = text[:3500] + "\n... _(truncated)_"
 
     # Disable Slack for testing - set DISABLE_SLACK=true to skip sending
     if os.getenv("DISABLE_SLACK", "false").lower() == "true":
